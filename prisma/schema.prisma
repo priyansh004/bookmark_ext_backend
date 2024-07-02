@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  collections Collection[]
+
+}
+
+model Collection {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  ownerId     Int        // Foreign key reference to User
+  owner       User       @relation(fields: [ownerId], references: [id])
+  links       Link[]
+}
+
+model Link {
+  id           Int        @id @default(autoincrement())
+  title        String
+  url          String
+  description  String?
+  label        String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  collectionId Int        // Foreign key reference to Collection
+  collection   Collection @relation(fields: [collectionId], references: [id])
+}
